@@ -76,7 +76,6 @@ export default function useNftSwap() {
             const additionalOrders = await fetchERC721Orders(collection, offset + limit, limit);
             orders.push(...additionalOrders);
         }
-        console.log(orders)
 
         return orders;
     };

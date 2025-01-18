@@ -73,19 +73,19 @@ const NFTDetails: React.FC = () => {
 
             if (isErc721 && contract) {
                 const balance = await contract.balanceOf(address);
-                const supply = balance.toNumber();
+                const supply = Number(balance);
                 const startIndex = (state.page - 1) * perPage;
                 const length = Math.min(perPage, supply - startIndex);
                 const tokenIds = await contract.getArrayTokenIds(startIndex, length, address);
-
-                const tokens = await Promise.all(tokenIds.map(async (id: string) => {
+                console.log('tokenIds : ', tokenIds)
+                const tokens = await Promise.all(tokenIds.map(async (id: bigint) => {
                     const [metadata, orderbook_status] = await Promise.all([
-                        getMetadata(id, contract, chainId),
-                        fetchERC721Status(contractAddress, id)
+                        getMetadata(String(id), contract, chainId),
+                        fetchERC721Status(contractAddress, String(id))
                     ]);
-                    return { id: id, metadata, orderbook_status };
+                    return { id: String(id), metadata, orderbook_status };
                 }));
-
+                console.log('tokens : ', tokens)
                 setState(prev => ({
                     ...prev,
                     nftData: [...prev.nftData, ...tokens],
