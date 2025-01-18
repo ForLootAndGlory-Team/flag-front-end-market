@@ -59,7 +59,7 @@ const NFTDetails: React.FC = () => {
     }, []);
 
     const fetchNFTDetails = useCallback(async () => {
-        if (!walletProvider || !isConnected || !address || !contractAddress || !chainId || state.isFetching || !contract) return;
+        if (!walletProvider || !isConnected || !address || !contractAddress || !chainId || !contract) return;
 
         setState(prev => ({ ...prev, isFetching: true }));
 
@@ -146,6 +146,8 @@ const NFTDetails: React.FC = () => {
         const metadata = await (await fetch(convertToPinataGateway(uri))).json();
         return metadata;
     };
+
+    console.log('state : ',state)
 
     return (
         <div className="container p-5 mx-auto mt-20">

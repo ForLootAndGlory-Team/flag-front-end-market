@@ -32,34 +32,48 @@ export default function useNftSwap() {
         const orders: OrderPayload[] = [];
         const url = `${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=sell&offset=${offset}&limit=${limit}`;
 
-        const response = await fetch(url);
-        const data = await response.json();
-        const newOrders = data.orders || [];
-        orders.push(...newOrders);
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const newOrders = data.orders || [];
+            orders.push(...newOrders);
 
-        if (newOrders.length === limit) {
-            const additionalOrders = await fetchERC721Orders(collection, offset + limit, limit);
-            orders.push(...additionalOrders);
+            if (newOrders.length === limit) {
+                const additionalOrders = await fetchERC721Orders(collection, offset + limit, limit);
+                orders.push(...additionalOrders);
+            }
+            console.log(orders)
+
+            return orders;
+        } catch (e) {
+            console.log(e)
+            return orders;
         }
-        console.log(orders)
-
-        return orders;
     };
 
     const fetchERC1155Orders = async (collection: string, tokenId: string) => {
-
-        const sellResponse = await fetch(`${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=sell&nftTokenId=${tokenId}`);
-        const buyResponse = await fetch(`${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=buy&nftTokenId=${tokenId}`);
-
-        const sellData = await sellResponse.json();
-        const buyData = await buyResponse.json();
-        const orders = {
-            id: tokenId,
-            sell: sellData as OrderPayload[],
-            buy: buyData as OrderPayload[],
+        let orders = {
+            id: '',
+            sell: [] as OrderPayload[],
+            buy: [] as OrderPayload[],
         }
+        try {
+            const sellResponse = await fetch(`${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=sell&nftTokenId=${tokenId}`);
+            const buyResponse = await fetch(`${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=buy&nftTokenId=${tokenId}`);
 
-        return orders
+            const sellData = await sellResponse.json();
+            const buyData = await buyResponse.json();
+             orders = {
+                id: tokenId,
+                sell: sellData as OrderPayload[],
+                buy: buyData as OrderPayload[],
+            }
+
+            return orders
+        } catch (e) {
+            console.log(e)
+            return orders
+        }
     }
 
     const fetchERC721Status = async (collection: string, tokenId: string, offset: number = 0, limit: number = 100) => {
