@@ -35,7 +35,7 @@ export const contractChainSelector: ContractMap = {
 export const MARKETPLACE_ENABLED = true;
 export const FEES = 0.05;
 export const ORDER_DURATION = 720; // hours => 30 jours
-export const ORDERBOOK_API_URL = 'http://localhost:5000' // 'https://api.forlootandglory.io'; //TODO: PROD
+export const ORDERBOOK_API_URL = 'https://api.forlootandglory.io' // 'https://api.forlootandglory.io'; //TODO: PROD
 export const CHAIN_ID = '1482601649';
 export const pinataGatewayUrl = "https://forlootandglory.mypinata.cloud"
 

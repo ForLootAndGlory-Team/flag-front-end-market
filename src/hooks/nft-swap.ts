@@ -62,22 +62,29 @@ export default function useNftSwap() {
         return orders
     }
 
-    const fetchERC721Status = async (collection: string,tokenId: string, offset: number = 0, limit: number = 100 ) => {
+    const fetchERC721Status = async (collection: string, tokenId: string, offset: number = 0, limit: number = 100) => {
 
         const orders: OrderPayload[] = [];
         const url = `${ORDERBOOK_API_URL}/orderbook/orders?chainId=${chainId}&nftToken=${collection.toLowerCase()}&status=open&sellOrBuyNft=sell&offset=${offset}&limit=${limit}&nftTokenId=${tokenId}`;
 
-        const response = await fetch(url);
-        const data = await response.json();
-        const newOrders = data.orders || [];
-        orders.push(...newOrders);
+        try {
+            const response = await fetch(url);
+            console.log(response)
+            const data = await response.json();
+            const newOrders = data.orders || [];
+            orders.push(...newOrders);
 
-        if (newOrders.length === limit) {
-            const additionalOrders = await fetchERC721Orders(collection, offset + limit, limit);
-            orders.push(...additionalOrders);
+            if (newOrders.length === limit) {
+                const additionalOrders = await fetchERC721Orders(collection, offset + limit, limit);
+                orders.push(...additionalOrders);
+            }
+
+            return orders;
+
+        } catch (e) {
+            console.log(e)
+            return orders
         }
-
-        return orders;
     };
 
     const approveToken = async (token: SwappableAssetV4, makerAddress: string) => {
@@ -117,14 +124,14 @@ export default function useNftSwap() {
         const signer = ethersProvider.getSigner()
 
         const nftSwapSdk = new NftSwapV4(ethersProvider, signer, chainId, {
-            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace,
+            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace.ProxyMultiProxyAddress,
             orderbookRootUrl: ORDERBOOK_API_URL
         })
         try {
 
             let expirationDate = new Date();
             expirationDate.setHours(expirationDate.getHours() + ORDER_DURATION);
-            //expirationDate.setMinutes(expirationDate.getMinutes() + 1); // for tesing purpose
+            //expirationDate.setMinutes(expirationDate.getMinutes() + 1); // for testing purpose
             const order = nftSwapSdk.buildOrder(makerAsset, takerAsset, makerAddress, {
                 expiry: expirationDate,
                 fees: [
@@ -151,7 +158,7 @@ export default function useNftSwap() {
         const signer = ethersProvider.getSigner()
 
         const nftSwapSdk = new NftSwapV4(ethersProvider, signer, chainId, {
-            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace,
+            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace.ProxyMultiProxyAddress,
             orderbookRootUrl: ORDERBOOK_API_URL
         })
 
@@ -170,7 +177,7 @@ export default function useNftSwap() {
         const signer = ethersProvider.getSigner()
 
         const nftSwapSdk = new NftSwapV4(ethersProvider, signer, chainId, {
-            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace,
+            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace.ProxyMultiProxyAddress,
             orderbookRootUrl: ORDERBOOK_API_URL
         })
         try {
@@ -188,7 +195,7 @@ export default function useNftSwap() {
         const signer = ethersProvider.getSigner()
 
         const nftSwapSdk = new NftSwapV4(ethersProvider, signer, chainId, {
-            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace,
+            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace.ProxyMultiProxyAddress,
             orderbookRootUrl: ORDERBOOK_API_URL
         })
 
@@ -207,7 +214,7 @@ export default function useNftSwap() {
         const signer = ethersProvider.getSigner()
 
         const nftSwapSdk = new NftSwapV4(ethersProvider, signer, chainId, {
-            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace,
+            zeroExExchangeProxyContractAddress: contractChainSelector[chainId].marketplace.ProxyMultiProxyAddress,
             orderbookRootUrl: ORDERBOOK_API_URL
         })
 
@@ -220,5 +227,5 @@ export default function useNftSwap() {
         }
     }
 
-    return { approveToken, signAndPostOrder, signOrder, fillSignedOrder, cancelOrder, fetchERC721Orders, fetchERC1155Orders,fetchERC721Status }
+    return { approveToken, signAndPostOrder, signOrder, fillSignedOrder, cancelOrder, fetchERC721Orders, fetchERC1155Orders, fetchERC721Status }
 }
