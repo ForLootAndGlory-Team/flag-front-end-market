@@ -1,0 +1,5 @@
+{
+    "UniswapV3Factory": "0xdD437584fd0A80a97B0575F133E16c70c74f5550",
+    "SwapRouter": "0xAAf0df59AC5dC405027B0B10B9f079AE7bAC3e63",
+    "NonfungiblePositionManager": "0x4a839eF78f961091D739C4b4cD1c31dFA91b2316"
+}
